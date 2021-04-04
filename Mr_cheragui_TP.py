@@ -9,7 +9,7 @@ import random
 import itertools
 import collections
 import time
-import pygame
+import pygame as pg
 
 class Casa:
     
@@ -59,6 +59,18 @@ class Casa:
     def __str__(self):
         return str(self.puzzle)
 
+# --------------------------------------------------------------------------------------------        
+class python_visualization:
+    def __init__ (self,window_width,window_height,animation_increment,clock_tick_rate):
+        self.window_width = window_width
+        self.window_height = window_height
+        self.animation_increment = animation_increment
+        self.clock_tick_rate = clock_tick_rate
+
+    def visual():
+        pg.init()
+
+# --------------------------------------------------------------------------------------------
 class Solver:
     def __init__(self, start):
         self.start = start
@@ -80,6 +92,9 @@ class Solver:
                 if child.state not in seen:
                     queue.appendleft(child)
                     seen.add(child.state)
+
+# --------------------------------------------------------------------------------------------        
+
 
 class Puzzle:
     def __init__(self, game_board):
@@ -157,8 +172,9 @@ class Puzzle:
         for row in self.game_board:
             yield from row
 
-# the main menu for this program
+# --------------------------------------------------------------------------------------------
 
+# the main menu for this program
 if __name__ == '__main__':
 
     # example of use     
@@ -181,3 +197,5 @@ if __name__ == '__main__':
 
     print("Total number of steps: " + str(steps))
     print("Total amount of time in search: " + str(Stop_watch_after_start - Stop_watch_before_start) + " second(s)")
+
+    star = python_visualization()
