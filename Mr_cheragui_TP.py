@@ -4,6 +4,7 @@
     auther : amin abdedaiem
     date & time : april 4th 2021 11:30 AM
     subject : creat {A*} algorithm to solve a game_board
+    github repo : https://github.com/amincoding/AI_TP
 
 """ 
 # importing libraries __init__
