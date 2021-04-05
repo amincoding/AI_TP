@@ -111,12 +111,12 @@ class O7jia:
         moves = []
         for i, j in itertools.product(range(self.width),
                                       range(self.width)):
-            direcs = {'R':(i, j-1),
-                      'L':(i, j+1),
-                      'D':(i-1, j),
-                      'U':(i+1, j)}
+            directions = {'R':(i, j-1),
+                          'L':(i, j+1),
+                          'D':(i-1, j),
+                          'U':(i+1, j)}
 
-            for action, (r, c) in direcs.items():
+            for action, (r, c) in directions.items():
                 if r >= 0 and c >= 0 and r < self.width and c < self.width and \
                    self.game_board[r][c] == 0:
                     move = create_move((i,j), (r,c)), action
@@ -188,11 +188,13 @@ class Lo3ba_puzzle:
             pygame.draw.rect(screen , (0,255,0) , (x,y,self.ts,self.ts))
 
 
+
 def Lo3ba_visual():
 
     pygame.init()
     os.environ["SDL_VIDEO_CENTERED"] = '1'
     pygame.display.set_caption("Mr Cheragui O7jia")
+    # screen size (320,320) ta9dar tbadlo 3ady
     screen = pygame.display.set_mode((320,320))
     # add the flag RESIZABLE to set_mode to make the game RESIZABLE
     fpsclock = pygame.time.Clock()
@@ -201,6 +203,7 @@ def Lo3ba_visual():
     while True:
         dt = fpsclock.tick()/1000
 
+        # rgb (0,0,0) = black
         screen.fill((0,0,0))
         program.draw(screen)
         pygame.display.flip()
@@ -211,15 +214,34 @@ def Lo3ba_visual():
 
         program.update(dt)
 
+def get_input():
+
+    Tdim = int(input("Donner moi la dimension de set matrix : "))
+    dim = Tdim - 1
+
+    game_board_from_input = [dim][dim]
+
+    for i in range(dim):
+        for j in range(1 , dim):
+            temp = int(input())
+            game_board_from_input[i][j] = temp
+
+    return game_board_from_input
+
+    # the get imput function is not working
+
 # --------------------------------------------------------------------------------------------
 
 # the main menu for this program
 if __name__ == '__main__':
 
-    # example of use     
-    game_board = [[1,5,8],
-                  [2,0,3],
-                  [7,4,6]]
+    # example of use without input    
+    #game_board = [[1,5,8],
+    #              [2,0,3],
+    #              [7,4,6]]
+
+    # example of use with input
+    game_board = get_input()
 
     o7jia = O7jia(game_board)
     #O7jia = O7jia.shuffle()
