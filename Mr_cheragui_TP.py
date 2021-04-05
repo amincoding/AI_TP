@@ -1,20 +1,28 @@
 #!/usr/bin/python
+
 """
     auther : amin abdedaiem
     date & time : april 4th 2021 11:30 AM
     subject : creat {A*} algorithm to solve a game_board
 
 """ 
+# importing libraries __init__
+
+import sys
+import os
 import random
 import itertools
 import collections
 import time
-import pygame as pg
+import pygame 
+from pygame.locals import *
+
+# importing libraries __end__
 
 class Casa:
     
-    def __init__(self, puzzle, parent=None, action=None):
-        self.puzzle = puzzle
+    def __init__(self, O7jia, parent=None, action=None):
+        self.O7jia = O7jia
         self.parent = parent
         self.action = action
         if (self.parent != None):
@@ -23,7 +31,7 @@ class Casa:
             self.g = 0
 
     @property
-    def score(self):
+    def kimat_F(self):
         return (self.g + self.h)
 
     @property
@@ -32,7 +40,7 @@ class Casa:
         return str(self)
 
     @property 
-    def path(self):
+    def trig(self):
 
         casa, p = self, []
         while casa:
@@ -42,36 +50,25 @@ class Casa:
 
     @property
     def solved(self):
-        return self.puzzle.solved
+        return self.O7jia.solved
 
     @property
     def actions(self):
-        return self.puzzle.actions
+        return self.O7jia.actions
 
     @property
     def h(self):
-        return self.puzzle.manhattan
+        return self.O7jia.manhattan
 
     @property
     def f(self):
         return self.h + self.g
 
     def __str__(self):
-        return str(self.puzzle)
-
-# --------------------------------------------------------------------------------------------        
-class python_visualization:
-    def __init__ (self,window_width,window_height,animation_increment,clock_tick_rate):
-        self.window_width = window_width
-        self.window_height = window_height
-        self.animation_increment = animation_increment
-        self.clock_tick_rate = clock_tick_rate
-
-    def visual():
-        pg.init()
+        return str(self.O7jia)
 
 # --------------------------------------------------------------------------------------------
-class Solver:
+class AL_7al:
     def __init__(self, start):
         self.start = start
 
@@ -84,7 +81,7 @@ class Solver:
             queue = collections.deque(sorted(list(queue), key=lambda casa: casa.f))
             casa = queue.popleft()
             if casa.solved:
-                return casa.path
+                return casa.trig
 
             for move, action in casa.actions:
                 child = Casa(move(), casa, action)
@@ -96,7 +93,7 @@ class Solver:
 # --------------------------------------------------------------------------------------------        
 
 
-class Puzzle:
+class O7jia:
     def __init__(self, game_board):
         self.width = len(game_board[0])
         self.game_board = game_board
@@ -140,17 +137,17 @@ class Puzzle:
 
     def shuffle(self):
  
-        puzzle = self
+        O7jia = self
         for _ in range(1000):
-            puzzle = random.choice(puzzle.actions)[0]()
-        return puzzle
+            O7jia = random.choice(O7jia.actions)[0]()
+        return O7jia
 
     def copy(self):
 
         game_board = []
         for row in self.game_board:
             game_board.append([x for x in row])
-        return Puzzle(game_board)
+        return O7jia(game_board)
 
     def _move(self, at, to):
 
@@ -172,6 +169,43 @@ class Puzzle:
         for row in self.game_board:
             yield from row
 
+class Lo3ba_puzzle:
+    def __init__(self,gs,ts,ms):
+        self.gs, self.ts,self.ms = gs , ts , ms
+
+        self.tiles_len = gs[0]*gs[1]-1
+
+        self.tiles = [(x,y) for y in range(gs[1]) for x in range(gs[0])]
+
+    def update(self,dt):
+        pass
+
+    def draw(self,screen):
+        for i in range(self.tiles_len):
+
+
+def Lo3ba_visual():
+
+    pygame.init()
+    os.environ["SDL_VIDEO_CENTERED"] = '1'
+    pygame.display.set_caption("Slide O7jia")
+    screen = pygame.display.set_mode((800,600))
+    fpsclock = pygame.time.Clock()
+    program = Lo3ba_puzzle((3,3) , 100 , 5)
+
+    while True:
+        dt = fpsclock.tick()/1000
+
+        screen.fill((0,0,0))
+        program.draw(screen)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: pygame.quit()
+            sys.exit()
+
+        program.update(dt)
+
 # --------------------------------------------------------------------------------------------
 
 # the main menu for this program
@@ -182,9 +216,9 @@ if __name__ == '__main__':
                   [2,0,3],
                   [7,4,6]]
 
-    puzzle = Puzzle(game_board)
-    #puzzle = puzzle.shuffle()
-    s = Solver(puzzle)
+    o7jia = O7jia(game_board)
+    #O7jia = O7jia.shuffle()
+    s = AL_7al(o7jia)
     Stop_watch_before_start = time.process_time()
     p = s.solve()
     Stop_watch_after_start = time.process_time()
@@ -192,10 +226,11 @@ if __name__ == '__main__':
     steps = 0
     for casa in p:
         print(casa.action)
-        casa.puzzle.pprint()
+        casa.O7jia.pprint()
         steps += 1
 
     print("Total number of steps: " + str(steps))
     print("Total amount of time in search: " + str(Stop_watch_after_start - Stop_watch_before_start) + " second(s)")
 
-    star = python_visualization()
+    Lo3ba_visual()
+                
