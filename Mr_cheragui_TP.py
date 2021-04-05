@@ -177,19 +177,26 @@ class Lo3ba_puzzle:
 
         self.tiles = [(x,y) for y in range(gs[1]) for x in range(gs[0])]
 
+        self.tilepos = {(x,y): (x*(ts+ms)+ms,y*(ts+ms)+ms) for y in range(gs[1])  for x in range(gs[0])}
+
+
+
     def update(self,dt):
         pass
 
     def draw(self,screen):
         for i in range(self.tiles_len):
+            x,y = self.tilepos[self.tiles[i]]
+            pygame.draw.rect(screen , (0,255,0) , (x,y,self.ts,self.ts))
 
 
 def Lo3ba_visual():
 
     pygame.init()
     os.environ["SDL_VIDEO_CENTERED"] = '1'
-    pygame.display.set_caption("Slide O7jia")
-    screen = pygame.display.set_mode((800,600))
+    pygame.display.set_caption("Mr Cheragui O7jia")
+    screen = pygame.display.set_mode((320,320))
+    # add the flag RESIZABLE to set_mode to make the game RESIZABLE
     fpsclock = pygame.time.Clock()
     program = Lo3ba_puzzle((3,3) , 100 , 5)
 
@@ -202,7 +209,7 @@ def Lo3ba_visual():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT: pygame.quit()
-            sys.exit()
+            # sys.exit()
 
         program.update(dt)
 
@@ -234,3 +241,11 @@ if __name__ == '__main__':
 
     Lo3ba_visual()
                 
+    # TODO:
+    
+    '''
+
+        link : https://www.youtube.com/watch?v=afC3dq9MeJg
+        time : 2:17
+
+    '''
