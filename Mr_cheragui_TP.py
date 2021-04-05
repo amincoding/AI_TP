@@ -16,8 +16,6 @@ import itertools
 import collections
 import time
 import pygame 
-from pygame.locals import *
-
 # importing libraries __end__
 
 class Casa:
@@ -37,7 +35,6 @@ class Casa:
 
     @property
     def state(self):
- 
         return str(self)
 
     @property 
@@ -231,16 +228,19 @@ if __name__ == '__main__':
     p = s.solve()
     Stop_watch_after_start = time.process_time()
 
+    path = []
     steps = 0
     for casa in p:
-        print(casa.action)
+        path.append(casa.action)
         casa.O7jia.pprint()
         steps += 1
 
     print("Total number of steps: " + str(steps))
     print("Total amount of time in search: " + str(Stop_watch_after_start - Stop_watch_before_start) + " second(s)")
+    print(f"the path to win the game is : {path}")
 
     Lo3ba_visual()
+    
                 
     # TODO:
     
