@@ -14,31 +14,36 @@ import random
 import time
 import copy
 import pygame
-# importing libraries __end__
 from queue import Queue
+sys.setrecursionlimit(1500)
 
-src = [1, 2, 3, -1, 4, 5, 6, 7, 8]
-target = [1, 2, 3, 4, 5, 8, -1, 6, 7]
+# importing libraries __end__
+
 
 
 def h(state):
-    res = 0
+    result = 0
     for i in range(1, 9):
-        if state.index(i) != target.index(i): res += 1
-    return res
+        if state.index(i) != game_board_goal.index(i):
+            result += 1
+    return result
 
 
-def gen(state, m, b):
+def generate_moves(state, m, b):
     temp = state[:]
-    if m == 'l': temp[b], temp[b - 1] = temp[b - 1], temp[b]
-    if m == 'r': temp[b], temp[b + 1] = temp[b + 1], temp[b]
-    if m == 'u': temp[b], temp[b - 3] = temp[b - 3], temp[b]
-    if m == 'd': temp[b], temp[b + 3] = temp[b + 3], temp[b]
+    if m == 'l': 
+        temp[b], temp[b - 1] = temp[b - 1], temp[b]
+    if m == 'r': 
+        temp[b], temp[b + 1] = temp[b + 1], temp[b]
+    if m == 'u': 
+        temp[b], temp[b - 3] = temp[b - 3], temp[b]
+    if m == 'd': 
+        temp[b], temp[b + 3] = temp[b + 3], temp[b]
     return temp
 
 
 def possible_moves(state, visited_states):
-    b = state.index(-1)
+    b = state.index(0)
     d = []
     pos_moves = []
     if b <= 5: d.append('d')
@@ -46,47 +51,52 @@ def possible_moves(state, visited_states):
     if b % 3 > 0: d.append('l')
     if b % 3 < 2: d.append('r')
     for i in d:
-        temp = gen(state, i, b)
-        if not temp in visited_states: pos_moves.append(temp)
+        temp = generate_moves(state, i, b)
+        if not temp in visited_states: 
+            pos_moves.append(temp)
     return pos_moves
 
 
-def search(src, target, visited_states, g):
-    if src == target: return visited_states
-    visited_states.append(src),
-    adj = possible_moves(src, visited_states)
-    scores = []
+def A_search_algorithm(game_board, game_board_goal, visited_states, g):
+    if game_board == game_board_goal: 
+        return visited_states
+    visited_states.append(game_board),adj = possible_moves(game_board, visited_states)
+    f = []
     selected_moves = []
-    for move in adj: scores.append(h(move) + g)
-    if len(scores) == 0:
+    for move in adj: 
+        f.append(h(move) + g)
+    if len(f) == 0:
         min_score = 0
     else:
-        min_score = min(scores)
+        min_score = min(f)
     for i in range(len(adj)):
-        if scores[i] == min_score: selected_moves.append(adj[i])
+        if f[i] == min_score: 
+            selected_moves.append(adj[i])
     for move in selected_moves:
-        if search(move, target, visited_states, g + 1): return visited_states
+        if A_search_algorithm(move, game_board_goal, visited_states, g + 1): 
+            return visited_states
     return None
 
-def solve(src, target, bfs=True):
+def solve(game_board, game_board_goal,dim):
     visited_states = []
 
-    res = search(src, target, visited_states, 0)
+    result = A_search_algorithm(game_board, game_board_goal, visited_states, 0)
 
-    if res:
+    if result:
         i = 0
-        for state in res:
+        for state in result:
             print('move :', i + 1, end="\n")
             print()
-            display(state)
+            display(state,dim)
             i += 1
         print('move :', i + 1)
-        display(target)
+        display(game_board_goal,dim)
 
 
-def display(state):
+
+def display(state,dim):
     print()
-    for i in range(9):
+    for i in range(dim*dim):
         if i % 3 == 0: print()
         if state[i] == -1:
             print(state[i], end="\t")
@@ -94,16 +104,34 @@ def display(state):
             print(state[i], end="\t")
     print(end="\n")
 
-
 def main():
-    print('Initial State :')
-    display(src)
-    print('Goal State :')
-    display(target)
+
+
+    dim = int(input("donner moi la taille de votre taquin matrix : "))
+
+    print('Donner moi votre taquin {\Etat initial} :')
+    
+    game_board = [] 
+    for i in range(dim):
+        temp = input().split(" ")
+        for t in temp:
+            game_board.append(int(t))
+    display(game_board,dim)
+    
+    print('Donner moi votre taquin matrix {\Etat Final} :')
+
+    game_board_goal = [] 
+    for i in range(0,dim):
+        temp = input().split(" ")
+        for t in temp:
+            game_board_goal.append(int(t))
+    display(game_board_goal,dim)
+    
     print('*' * 10)
-    solve(src, target)
+    solve(game_board, game_board_goal,dim)
 
 if __name__ == '__main__':
+    sys.setrecursionlimit(1500)
     main()
     #TODO:
     
