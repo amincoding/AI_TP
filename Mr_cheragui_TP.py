@@ -15,260 +15,118 @@ import random
 import itertools
 import collections
 import time
-import pygame 
+import math
+import copy
 # importing libraries __end__
 
-class Casa:
-    
-    def __init__(self, O7jia, parent=None, action=None):
-        self.O7jia = O7jia
-        self.parent = parent
-        self.action = action
-        if (self.parent != None):
-            self.g = parent.g + 1
-        else:
-            self.g = 0
-
-    @property
-    def kimat_F(self):
-        return (self.g + self.h)
-
-    @property
-    def state(self):
-        return str(self)
-
-    @property 
-    def trig(self):
-
-        casa, p = self, []
-        while casa:
-            p.append(casa)
-            casa = casa.parent
-        yield from reversed(p)
-
-    @property
-    def solved(self):
-        return self.O7jia.solved
-
-    @property
-    def actions(self):
-        return self.O7jia.actions
-
-    @property
-    def h(self):
-        return self.O7jia.manhattan
-
-    @property
-    def f(self):
-        return self.h + self.g
-
-    def __str__(self):
-        return str(self.O7jia)
-
-# --------------------------------------------------------------------------------------------
-class AL_7al:
-    def __init__(self, start):
-        self.start = start
-
-    def solve(self):
-
-        queue = collections.deque([Casa(self.start)])
-        seen = set()
-        seen.add(queue[0].state)
-        while queue:
-            queue = collections.deque(sorted(list(queue), key=lambda casa: casa.f))
-            casa = queue.popleft()
-            if casa.solved:
-                return casa.trig
-
-            for move, action in casa.actions:
-                child = Casa(move(), casa, action)
-
-                if child.state not in seen:
-                    queue.appendleft(child)
-                    seen.add(child.state)
-
-# --------------------------------------------------------------------------------------------        
+def possible_moves(game_board, search_zero):
+    x = search_zero
+    if x == (1,1):
+        moves = 4
+        for i in range(moves):
+            new_board = copy.deepcopy(game_board)
 
 
-class O7jia:
-    def __init__(self, game_board):
-        self.width = len(game_board[0])
-        self.game_board = game_board
-
-    @property
-    def solved(self):
-
-        N = self.width * self.width
-        return str(self) == ''.join(map(str, range(1,N))) + '0'
-
-    @property 
-    def actions(self):
-
-        def create_move(at, to):
-            return lambda: self._move(at, to)
-
-        moves = []
-        for i, j in itertools.product(range(self.width),
-                                      range(self.width)):
-            directions = {'R':(i, j-1),
-                          'L':(i, j+1),
-                          'D':(i-1, j),
-                          'U':(i+1, j)}
-
-            for action, (r, c) in directions.items():
-                if r >= 0 and c >= 0 and r < self.width and c < self.width and \
-                   self.game_board[r][c] == 0:
-                    move = create_move((i,j), (r,c)), action
-                    moves.append(move)
-        return moves
-
-    @property
-    def manhattan(self):
-        distance = 0
-        for i in range(3):
-            for j in range(3):
-                if self.game_board[i][j] != 0:
-                    x, y = divmod(self.game_board[i][j]-1, 3)
-                    distance += abs(x - i) + abs(y - j)
-        return distance
-
-    def shuffle(self):
- 
-        O7jia = self
-        for _ in range(1000):
-            O7jia = random.choice(O7jia.actions)[0]()
-        return O7jia
-
-    def copy(self):
-
-        game_board = []
-        for row in self.game_board:
-            game_board.append([x for x in row])
-        return O7jia(game_board)
-
-    def _move(self, at, to):
-
-        copy = self.copy()
-        i, j = at
-        r, c = to
-        copy.game_board[i][j], copy.game_board[r][c] = copy.game_board[r][c], copy.game_board[i][j]
-        return copy
-
-    def pprint(self):
-        for row in self.game_board:
-            print(row)
-        print()
-
-    def __str__(self):
-        return ''.join(map(str, self))
-
-    def __iter__(self):
-        for row in self.game_board:
-            yield from row
-
-class Lo3ba_puzzle:
-    def __init__(self,gs,ts,ms):
-        self.gs, self.ts,self.ms = gs , ts , ms
-
-        self.tiles_len = gs[0]*gs[1]-1
-
-        self.tiles = [(x,y) for y in range(gs[1]) for x in range(gs[0])]
-
-        self.tilepos = {(x,y): (x*(ts+ms)+ms,y*(ts+ms)+ms) for y in range(gs[1])  for x in range(gs[0])}
+        new_board = copy.deepcopy(game_board)
+        new_board[i], new_board[i - 3] = new_board[i - 3], new_board[i]
+        yield State(new_board, moves, self)
+    if i in [1, 2, 4, 5, 7, 8]:
+        new_board = self.values[:]
+        new_board[i], new_board[i - 1] = new_board[i - 1], new_board[i]
+        yield State(new_board, moves, self)
+    if i in [0, 1, 3, 4, 6, 7]:
+        new_board = self.values[:]
+        new_board[i], new_board[i + 1] = new_board[i + 1], new_board[i]
+        yield State(new_board, moves, self)
+    if i in [0, 1, 2, 3, 4, 5]:
+        new_board = self.values[:]
+        new_board[i], new_board[i + 3] = new_board[i + 3], new_board[i]
+        yield State(new_board, moves, self)
 
 
+def h(game_board,game_board_goal,dim):
+    itere = 0
+    for i in range(dim - 1):
+        for j in range(dim - 1):
+            if game_board[i][j] - game_board_goal[i][j] == 0:
+                itere += 1
+    if itere == 9:
+        return 0
+    else:
+        return dim*dim -itere
 
-    def update(self,dt):
-        pass
-
-    def draw(self,screen):
-        for i in range(self.tiles_len):
-            x,y = self.tilepos[self.tiles[i]]
-            pygame.draw.rect(screen , (0,255,0) , (x,y,self.ts,self.ts))
+def g():
+    pass
 
 
+def moves(zero_position):
+    some_list = [(0,0),(0,2),(2,0),(2,2)]
 
-def Lo3ba_visual():
+    if zero_position == (1,1):
+        possible_moves = 4
+        list_of_coardonates = [(0,1),(1,0),(2,1),(1,2)]
+    elif zero_position in some_list:
+        possible_moves = 2
+        # possible_directions
 
-    pygame.init()
-    os.environ["SDL_VIDEO_CENTERED"] = '1'
-    pygame.display.set_caption("Mr Cheragui O7jia")
-    # screen size (320,320) ta9dar tbadlo 3ady
-    screen = pygame.display.set_mode((320,320))
-    # add the flag RESIZABLE to set_mode to make the game RESIZABLE
-    fpsclock = pygame.time.Clock()
-    program = Lo3ba_puzzle((3,3) , 100 , 5)
+def search_zero(game_board,dim):
+    exist = False
+    i = -1
+    j = -1
+    for rows in game_board:
+        i += 1
+        j = 0
+        for colomns in rows:
+            if colomns == 0:
+                j += 1
+                exist = True
+                return (i,j)
+    if not exist :
+        return "broken board"
 
-    while True:
-        dt = fpsclock.tick()/1000
+def f():
 
-        # rgb (0,0,0) = black
-        screen.fill((0,0,0))
-        program.draw(screen)
-        pygame.display.flip()
+    return lenghtOf_f
+def inputt():
+    dim = int(input("input the dimension on your board : "))
+    n = dim
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: pygame.quit()
-            # sys.exit()
+    game_board = [[0 for j in range(n)] for i in range(n)]
+    game_board_goal = [[0 for j in range(n)] for i in range(n)]
 
-        program.update(dt)
+    print("Input vals for your board : ")
+    for i in range(n):
+        for j in range(n):
+            k = int(input())
+            game_board[i][j] = k
 
-def get_input():
+    # User input of goal state       
+    print("Input vals for your goal_board : ")
+    for i in range(n):
+        for j in range(n):
+            k = int(input())
+            game_board_goal[i][j] = k
+    return n , game_board , game_board_goal
 
-    Tdim = int(input("Donner moi la dimension de set matrix : "))
-    dim = Tdim - 1
+def main():
+    dim , game_board , game_board_goal = inputt()
+    print(search_zero(game_board,dim))
+    print(h(game_board,game_board_goal,dim))
 
-    game_board_from_input = [dim][dim]
+    # print(game_board[2][1])
 
-    for i in range(dim):
-        for j in range(1 , dim):
-            temp = int(input())
-            game_board_from_input[i][j] = temp
-
-    return game_board_from_input
-
-    # the get imput function is not working
-
-# --------------------------------------------------------------------------------------------
-
-# the main menu for this program
 if __name__ == '__main__':
+    main()
 
-    # example of use without input    
-    #game_board = [[1,5,8],
-    #              [2,0,3],
-    #              [7,4,6]]
 
-    # example of use with input
-    game_board = get_input()
 
-    o7jia = O7jia(game_board)
-    #O7jia = O7jia.shuffle()
-    s = AL_7al(o7jia)
-    Stop_watch_before_start = time.process_time()
-    p = s.solve()
-    Stop_watch_after_start = time.process_time()
-
-    path = []
-    steps = 0
-    for casa in p:
-        path.append(casa.action)
-        casa.O7jia.pprint()
-        steps += 1
-
-    print("Total number of steps: " + str(steps))
-    print("Total amount of time in search: " + str(Stop_watch_after_start - Stop_watch_before_start) + " second(s)")
-    print(f"the path to win the game is : {path}")
-
-    Lo3ba_visual()
-    
-                
-    # TODO:
+    #TODO:
     
     '''
-
+        add a dynamic allocatoin position
+      
         link : https://www.youtube.com/watch?v=afC3dq9MeJg
         time : 2:17
 
     '''
+
