@@ -18,108 +18,135 @@ import time
 import math
 import copy
 # importing libraries __end__
+class Node:
+    def __init__(self,data,level,fval):
+        """ Initialize the node with the data, level of the node and the calculated fvalue """
+        self.data = data
+        self.level = level
+        self.fval = fval
 
-def possible_moves(game_board, search_zero):
-    x = search_zero
-    if x == (1,1):
-        moves = 4
-        for i in range(moves):
-            new_board = copy.deepcopy(game_board)
+    def generate_child(self):
+        """ Generate child nodes from the given node by moving the blank space
+            either in the four directions {up,down,left,right} """
+        x,y = self.find(self.data, 0)
+        """ val_list contains position values for moving the blank space in either of
+            the 4 directions [up,down,left,right] respectively. """
+        val_list = [[x,y-1],[x,y+1],[x-1,y],[x+1,y]]
+        children = []
+        for i in val_list:
+            child = self.shuffle(self.data,x,y,i[0],i[1])
+            if child is not None:
+                child_node = Node(child,self.level+1,0)
+                children.append(child_node)
+        return children
+        
+    def shuffle(self,puz,x1,y1,x2,y2):
+        """ Move the blank space in the given direction and if the position value are out
+            of limits the return None """
+        if x2 >= 0 and x2 < len(self.data) and y2 >= 0 and y2 < len(self.data):
+            temp_puz = []
+            temp_puz = self.copy(puz)
+            temp = temp_puz[x2][y2]
+            temp_puz[x2][y2] = temp_puz[x1][y1]
+            temp_puz[x1][y1] = temp
+            return temp_puz
+        else:
+            return None
+            
+
+    def copy(self,root):
+        """ Copy function to create a similar matrix of the given node"""
+        # temp = []
+        # for i in root:
+        #     t = []
+        #     for j in i:
+        #         t.append(j)
+        #     temp.append(t)
+        temp = copy.deepcopy(root)
+        return temp    
+            
+    def find(self,board,x):
+        """ Specifically used to find the position of the blank space """
+        for i in range(0,len(self.data)):
+            for j in range(0,len(self.data)):
+                if board[i][j] == 0:
+                    return i,j
 
 
-        new_board = copy.deepcopy(game_board)
-        new_board[i], new_board[i - 3] = new_board[i - 3], new_board[i]
-        yield State(new_board, moves, self)
-    if i in [1, 2, 4, 5, 7, 8]:
-        new_board = self.values[:]
-        new_board[i], new_board[i - 1] = new_board[i - 1], new_board[i]
-        yield State(new_board, moves, self)
-    if i in [0, 1, 3, 4, 6, 7]:
-        new_board = self.values[:]
-        new_board[i], new_board[i + 1] = new_board[i + 1], new_board[i]
-        yield State(new_board, moves, self)
-    if i in [0, 1, 2, 3, 4, 5]:
-        new_board = self.values[:]
-        new_board[i], new_board[i + 3] = new_board[i + 3], new_board[i]
-        yield State(new_board, moves, self)
+class Board:
+    def __init__(self,size):
+        """ Initialize the Board size by the specified size,open and closed lists to empty """
+        self.n = size
+        self.open = []
+        self.closed = []
 
+    def accept(self):
+        """ Accepts the Board from the user """
+        n = self.n
+        board = [[0 for j in range(n)] for i in range(n)]
+        for i in range(n):
+            for j in range(n):
+                k = int(input())
+                board[i][j] = k
+        return board
 
-def h(game_board,game_board_goal,dim):
-    itere = 0
-    for i in range(dim - 1):
-        for j in range(dim - 1):
-            if game_board[i][j] - game_board_goal[i][j] == 0:
-                itere += 1
-    if itere == 9:
-        return 0
-    else:
-        return dim*dim -itere
+    def f(self,start,goal):
+        """ Heuristic Function to calculate hueristic value f(x) = h(x) + g(x) """
+        return self.h(start.data,goal)+start.level
 
-def g():
-    pass
+    def h(self,start,goal):
+        """ Calculates the different between the given Boards """
+        temp = 0
+        for i in range(0,self.n):
+            for j in range(0,self.n):
+                if start[i][j] != goal[i][j] and start[i][j] != 0:
+                    temp += 1
+        return temp
+        
 
+    def process(self):
+        """ Accept Start and Goal Board state"""
+        print("Enter the start state matrix \n")
+        start = self.accept()
+        print("Enter the goal state matrix \n")        
+        goal = self.accept()
 
-def moves(zero_position):
-    some_list = [(0,0),(0,2),(2,0),(2,2)]
+        start = Node(start,0,0)
+        start.fval = self.f(start,goal)
+        """ Put the start node in the open list"""
+        self.open.append(start)
+        print("\n\n")
+        while True:
+            cur = self.open[0]
+            print("")
+            print("  | ")
+            print("  | ")
+            print(" \\\'/ \n")
+            for i in cur.data:
+                for j in i:
+                    print(j,end=" ")
+                print("")
+            """ If the difference between current and goal node is 0 we have reached the goal node"""
+            if(self.h(cur.data,goal) == 0):
+                break
+            for i in cur.generate_child():
+                i.fval = self.f(i,goal)
+                self.open.append(i)
+            self.closed.append(cur)
+            del self.open[0]
 
-    if zero_position == (1,1):
-        possible_moves = 4
-        list_of_coardonates = [(0,1),(1,0),(2,1),(1,2)]
-    elif zero_position in some_list:
-        possible_moves = 2
-        # possible_directions
-
-def search_zero(game_board,dim):
-    exist = False
-    i = -1
-    j = -1
-    for rows in game_board:
-        i += 1
-        j = 0
-        for colomns in rows:
-            if colomns == 0:
-                j += 1
-                exist = True
-                return (i,j)
-    if not exist :
-        return "broken board"
-
-def f():
-
-    return lenghtOf_f
-def inputt():
-    dim = int(input("input the dimension on your board : "))
-    n = dim
-
-    game_board = [[0 for j in range(n)] for i in range(n)]
-    game_board_goal = [[0 for j in range(n)] for i in range(n)]
-
-    print("Input vals for your board : ")
-    for i in range(n):
-        for j in range(n):
-            k = int(input())
-            game_board[i][j] = k
-
-    # User input of goal state       
-    print("Input vals for your goal_board : ")
-    for i in range(n):
-        for j in range(n):
-            k = int(input())
-            game_board_goal[i][j] = k
-    return n , game_board , game_board_goal
+            """ sort the opne list based on f value """
+            self.open.sort(key = lambda x:x.fval,reverse=False)
 
 def main():
-    dim , game_board , game_board_goal = inputt()
-    print(search_zero(game_board,dim))
-    print(h(game_board,game_board_goal,dim))
 
-    # print(game_board[2][1])
+    dim = int(input("input the dimention of your board : "))
+
+    board = Board(dim)
+    board.process()
 
 if __name__ == '__main__':
     main()
-
-
-
     #TODO:
     
     '''
@@ -129,4 +156,3 @@ if __name__ == '__main__':
         time : 2:17
 
     '''
-
