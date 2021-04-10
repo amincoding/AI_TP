@@ -15,7 +15,7 @@ import os
 import time
 import copy
 # import pygame
-sys.setrecursionlimit(1500)
+sys.setrecursionlimit(5000)
 
 # importing libraries __end__
 
@@ -134,18 +134,16 @@ def initualize():
 
 if __name__ == '__main__':
     start = time.time()
-    sys.setrecursionlimit(1500)
+    sys.setrecursionlimit(5000)
     game_board , game_board_goal , dim = initualize()    
     print('*' * 10)
     solve(game_board, game_board_goal,dim)
     end = time.time()
     print("this task took %f ms" % (end - start))
-    #TODO:
-    
+
+
+    ##TODO:
+
     '''
         add a dynamic allocatoin position
-      
-        link : https://www.youtube.com/watch?v=afC3dq9MeJg
-        time : 2:17
-
     '''
