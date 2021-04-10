@@ -2,24 +2,22 @@
 
 """
     auther : amin abdedaiem
-    date & time : april 4th 2021 11:30 AM
+    date & time of start : april 4th 2021 12:30 PM
     subject : creat {A*} algorithm to solve a game_board
     github repo : https://github.com/amincoding/AI_TP
+    date & time of end : april 9th 2021 02:30 AM
 
 """ 
 # importing libraries __init__
+
 import sys
 import os
-import random
 import time
 import copy
-import pygame
-from queue import Queue
+# import pygame
 sys.setrecursionlimit(1500)
 
 # importing libraries __end__
-
-
 
 def h(state):
     result = 0
@@ -46,10 +44,14 @@ def possible_moves(state, visited_states):
     b = state.index(0)
     d = []
     pos_moves = []
-    if b <= 5: d.append('d')
-    if b >= 3: d.append('u')
-    if b % 3 > 0: d.append('l')
-    if b % 3 < 2: d.append('r')
+    if b <= 5: 
+        d.append('d')
+    if b >= 3: 
+        d.append('u')
+    if b % 3 > 0: 
+        d.append('l')
+    if b % 3 < 2: 
+        d.append('r')
     for i in d:
         temp = generate_moves(state, i, b)
         if not temp in visited_states: 
@@ -60,18 +62,19 @@ def possible_moves(state, visited_states):
 def A_search_algorithm(game_board, game_board_goal, visited_states, g):
     if game_board == game_board_goal: 
         return visited_states
-    visited_states.append(game_board),adj = possible_moves(game_board, visited_states)
+    visited_states.append(game_board)
+    aa = possible_moves(game_board, visited_states)
     f = []
     selected_moves = []
-    for move in adj: 
+    for move in aa: 
         f.append(h(move) + g)
     if len(f) == 0:
         min_score = 0
     else:
         min_score = min(f)
-    for i in range(len(adj)):
+    for i in range(len(aa)):
         if f[i] == min_score: 
-            selected_moves.append(adj[i])
+            selected_moves.append(aa[i])
     for move in selected_moves:
         if A_search_algorithm(move, game_board_goal, visited_states, g + 1): 
             return visited_states
@@ -90,7 +93,7 @@ def solve(game_board, game_board_goal,dim):
             display(state,dim)
             i += 1
         print('move :', i + 1)
-        display(game_board_goal,dim)
+        display(game_board,dim)
 
 
 
@@ -104,8 +107,7 @@ def display(state,dim):
             print(state[i], end="\t")
     print(end="\n")
 
-def main():
-
+def initualize():
 
     dim = int(input("donner moi la taille de votre taquin matrix : "))
 
@@ -126,13 +128,18 @@ def main():
         for t in temp:
             game_board_goal.append(int(t))
     display(game_board_goal,dim)
-    
-    print('*' * 10)
-    solve(game_board, game_board_goal,dim)
+
+
+    return game_board ,game_board_goal ,dim
 
 if __name__ == '__main__':
+    start = time.time()
     sys.setrecursionlimit(1500)
-    main()
+    game_board , game_board_goal , dim = initualize()    
+    print('*' * 10)
+    solve(game_board, game_board_goal,dim)
+    end = time.time()
+    print("this task took %f ms" % (end - start))
     #TODO:
     
     '''
