@@ -10,14 +10,24 @@
 """ 
 # importing libraries __init__
 
+from PyQt5 import QtWidgets ,QtCore, QtGui
+from PyQt5.QtWidgets import QApplication , QMainWindow
 import sys
 import os
 import time
 import copy
+import window
+
 # import pygame
-sys.setrecursionlimit(5000)
+sys.setrecursionlimit(2000)
 
 # importing libraries __end__
+
+game_board_goal = []
+
+def get_game(m):
+    for i in range(len(m)):
+        game_board_goal.append(m[i])
 
 def h(state):
     result = 0
@@ -86,15 +96,16 @@ def solve(game_board, game_board_goal,dim):
     result = A_search_algorithm(game_board, game_board_goal, visited_states, 0)
 
     if result:
-        i = 0
+        i = -1
         for state in result:
-            print('move :', i + 1, end="\n")
-            print()
-            display(state,dim)
+            # print('move :', i + 1, end="\n")
+            # print()
+            # display(state,dim)
             i += 1
-        print('move :', i + 1)
-        display(game_board,dim)
-
+        r = i + 1
+        res = r
+    return res
+        # display(game_board_goal,dim)
 
 
 def display(state,dim):
@@ -132,14 +143,25 @@ def initualize():
 
     return game_board ,game_board_goal ,dim
 
+def main():
+
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = window.Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+
+    dim = 3
+
+   
+    sys.exit(app.exec_())
+
 if __name__ == '__main__':
-    start = time.time()
-    sys.setrecursionlimit(5000)
-    game_board , game_board_goal , dim = initualize()    
-    print('*' * 10)
-    solve(game_board, game_board_goal,dim)
-    end = time.time()
-    print("this task took %f ms" % (end - start))
+    
+    main()
+    
+
+   
 
 
     ##TODO:
